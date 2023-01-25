@@ -23,7 +23,7 @@ class PortfolioSimulator:
     def simulate_strategy(self, strategy):
         port_hist = {}
         action_hist = {}
-        price_colunm = "Close"
+        price_column = "Close"
         money = 1000
         short_limit = money * 0.5
         portfolio = {copmany: 0 for copmany in self.portfolio_companies}
@@ -34,7 +34,7 @@ class PortfolioSimulator:
             # Evaluate portfolio
             money += sum(
                 [
-                    daily_data[company][price_colunm] * portfolio[company]
+                    daily_data[company][price_column] * portfolio[company]
                     for company in portfolio
                 ]
             )
@@ -77,7 +77,7 @@ class PortfolioSimulator:
 
         money += sum(
             [
-                daily_data[company][price_colunm] * portfolio[company]
+                daily_data[company][price_column] * portfolio[company]
                 for company in portfolio
             ]
         )
