@@ -2,6 +2,7 @@ import pandas as pd
 import requests
 import urllib
 
+
 def get_company_data(comp_name):
     # comp_name = 'JP Morgan Chase & Co. Common Stock'
     url = "https://api.finsentim.com/latest/companies/data_dict/?key=jhcfkw0dfqe0gh8zw2eaun82yxggpevd%20&company={}".format(
@@ -17,14 +18,7 @@ def get_company_data(comp_name):
                 "daily_twitter_tweets_sentiment",
             ]
         },
-    )
-    # Check if response is valid
-    if (res.status_code not in range(200, 203)):
-        raise requests.exceptions.RequestException(
-            f"Something went wrong with the request. Status code: {res.status_code}"
-        )
-
-    res = res.json()
+    ).json()
     d_c = pd.DataFrame({"Close": res["daily_close"][1]}, index=res["daily_close"][0])
     d_s = pd.DataFrame(
         {"Split": res["stock_splits"][1]}, index=res["stock_splits"][0]
