@@ -18,7 +18,14 @@ def get_company_data(comp_name):
                 "daily_twitter_tweets_sentiment",
             ]
         },
-    ).json()
+    )
+    # Check if response is valid
+    if (not res.ok):
+        raise requests.exceptions.RequestException(
+            f"Something went wrong with the request. Status code: {res.status_code}"
+        )
+
+    res = res.json()
     d_c = pd.DataFrame({"Close": res["daily_close"][1]}, index=res["daily_close"][0])
     d_s = pd.DataFrame(
         {"Split": res["stock_splits"][1]}, index=res["stock_splits"][0]
