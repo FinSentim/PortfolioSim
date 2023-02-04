@@ -1,6 +1,6 @@
 import pandas as pd
 import requests
-import urllib
+import urllib.parse
 
 
 def get_company_data(comp_name):
