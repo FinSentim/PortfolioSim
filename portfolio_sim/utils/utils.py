@@ -64,7 +64,9 @@ class FinsentimAPI(APIRetriever):
         pass
 
     def get_company_data(self, comp_name):
-        url = "https://api.finsentim.com/latest/companies/data_dict/?key=jhcfkw0dfqe0gh8zw2eaun82yxggpevd%20&company={}".format(
+        url = ("https://api.finsentim.com/latest/"
+               "companies/data_dict/"
+               "?key=jhcfkw0dfqe0gh8zw2eaun82yxggpevd%20&company={}").format(
                     urllib.parse.quote(comp_name)
                 )
         res = requests.post(
