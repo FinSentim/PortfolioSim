@@ -3,9 +3,7 @@ import pytest
 import requests
 import pandas as pd
 import numpy as np
-import utils
-
-# import portfolio_sim.local_utils as local_utils
+import utils.utils
 import unittest
 
 
@@ -15,12 +13,10 @@ class DefaultWidgetSizeTestCase(unittest.TestCase):
 
 
 class GetCompanyDataTestCase(unittest.TestCase):
-    @patch("portfolio_sim.utils.requests.post")
-    def test_get_company_data_when_response_ok(mock_get):
+    @patch("requests.post")
+    def test_get_company_data_when_response_ok(self, mock_get):
 
-    # httpclient -> mock
-
-    
+        # httpclient -> mock
         stock_info = {
             "daily_close": [
                 [
@@ -44,7 +40,7 @@ class GetCompanyDataTestCase(unittest.TestCase):
 
         mock_get.return_value = Mock(ok=True)
         mock_get.return_value.json.return_value = stock_info
-        res = utils.get_company_data("BUZZ")
+        res = utils.utils.FinsentimAPI().get_company_data("BUZZ")
 
         stock_info = pd.DataFrame(
             columns=["Sentiment", "Volume", "Close", "Split"],
@@ -53,12 +49,12 @@ class GetCompanyDataTestCase(unittest.TestCase):
         )
         assert stock_info.equals(res)
 
-    @patch("portfolio_sim.utils.requests.post")
-    def test_get_company_data_when_response_bad(mock_get):
+    @patch("requests.post")
+    def test_get_company_data_when_response_bad(self, mock_get):
         mock_get.return_value.ok = False
 
         with pytest.raises(requests.exceptions.RequestException):
-            utils.get_company_data("BUZZ")
+            utils.utils.FinsentimAPI().get_company_data("BUZZ")
 
 
 if __name__ == "__main__":
