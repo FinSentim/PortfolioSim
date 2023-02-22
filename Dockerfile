@@ -1,4 +1,4 @@
-FROM python:latest
+FROM python:11
 
 RUN apt-get update -y && apt-get upgrade -y
 
