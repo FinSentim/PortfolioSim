@@ -1,16 +1,14 @@
 import pandas as pd
 import requests
 import urllib.parse
-import http.client
 from abc import ABC, abstractmethod
 
 
 class APIRetriever(ABC):
 
     """Super class for retrieving data from APIs"""
-    def __init__(self, http_client: http.client.HTTPConnection = None):
+    def __init__(self):
         pass
-    #    self.http_client = http_client
 
     @abstractmethod
     def get_company_data(self, comp_name):
@@ -62,9 +60,8 @@ class APIRetriever(ABC):
 
 class FinsentimAPI(APIRetriever):
 
-    def __init__(self, http_client: http.client.HTTPConnection = None):
+    def __init__(self):
         pass
-    #    super().__init__(http_client)
 
     def get_company_data(self, comp_name):
         url = """https://api.finsentim.com/latest/
@@ -73,7 +70,7 @@ class FinsentimAPI(APIRetriever):
                  company={}""".format(
                     urllib.parse.quote(comp_name)
                 )
-        res = requests.post(  # Exchange for HTTPClient
+        res = requests.post(
             url,
             json={
                 "requested_sources": [
