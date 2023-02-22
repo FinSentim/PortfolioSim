@@ -32,22 +32,23 @@ Here is an example of how you might run the simulation:
     import requests
     import pandas as pd
 
-    from portfolio_sim.local_utils import simulate_stock, load_index_data
+    from portfolio_sim.utils import utils
     from portfolio_sim.portfolio_simulator import PortfolioSimulator
     from portfolio_sim.strategies.single_strategies import MinMaxSentimentStrategy
 
     if __name__ == "__main__":
-        ## Load Company list
+        # Load Company list
         url = "https://api.finsentim.com/latest/companies/table/?key=jhcfkw0dfqe0gh8zw2eaun82yxggpevd%20"
         comp_table = requests.get(url)
         comp_table = pd.read_json(comp_table.json()).name
 
-        ## Load Index Data
-        index_data = load_index_data("2021-01-04", "2022-08-12")
+        # Load Index Data
+        api_obj = utils.FinsentimAPI()
+        index_data = api_obj.load_index_data("2021-01-04", "2022-08-12")
         index_data = index_data.drop(columns=["MOOD", "BUZZ"])
 
-        ## Simulate Portfolio
-        company_data_dict = simulate_stock(comp_table, "2021-01-04", "2022-08-12")
+        # Simulate Portfolio
+        company_data_dict = api_obj.simulate_stock(comp_table, "2021-01-04", "2022-08-12")
         ps = PortfolioSimulator(
             company_data_dict,
             comp_table,
