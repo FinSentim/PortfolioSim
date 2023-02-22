@@ -2,19 +2,13 @@ import pandas as pd
 import requests
 import urllib.parse
 
-class serviceBlabla(httpClient):
-    
-    """Reeee"""
-    def __init__(self, httpClient):
-        self.httpClient = httpClient #1
-
 
 def get_company_data(comp_name):
     # comp_name = 'JP Morgan Chase & Co. Common Stock'
     url = "https://api.finsentim.com/latest/companies/data_dict/?key=jhcfkw0dfqe0gh8zw2eaun82yxggpevd%20&company={}".format(
         urllib.parse.quote(comp_name)
     )
-    res = httpClient.post(
+    res = requests.post(
         url,
         json={
             "requested_sources": [
