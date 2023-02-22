@@ -1,10 +1,12 @@
-FROM python:3.10
+FROM python:3.11
+
+RUN apt-get update -y && apt-get upgrade -y
 
 # Set the working directory
 WORKDIR /portfolio_sim
 
-RUN apt-get update && apt-get -y upgrade
 RUN python -m pip install --upgrade pip
+RUN pip install ipykernel --upgrade
 
 # Install requirements
 COPY ./requirements_dev.txt /portfolio_sim
