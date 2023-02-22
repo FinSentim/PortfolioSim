@@ -7,11 +7,6 @@ import utils.utils
 import unittest
 
 
-class DefaultWidgetSizeTestCase(unittest.TestCase):
-    def test_default_widget_size(self):
-        self.assertEqual("HELLO", "HELLO")
-
-
 class GetCompanyDataTestCase(unittest.TestCase):
     @patch("requests.post")
     def test_get_company_data_when_response_ok(self, mock_get):
