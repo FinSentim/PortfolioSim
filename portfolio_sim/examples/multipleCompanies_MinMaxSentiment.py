@@ -1,7 +1,7 @@
 import requests
 import pandas as pd
 
-from portfolio_sim.utils import simulate_stock, load_index_data
+from portfolio_sim import utils
 from portfolio_sim.portfolio_simulator import PortfolioSimulator
 from portfolio_sim.strategies.single_strategies import MinMaxSentimentStrategy
 
@@ -15,11 +15,13 @@ if __name__ == "__main__":
     comp_table = pd.read_json(comp_table.json()).name
 
     # Load Index Data
-    index_data = load_index_data("2022-08-01", "2022-08-12")
+    index_data = utils.FinsentimAPI().\
+        load_index_data("2022-08-01", "2022-08-12")
     index_data = index_data.drop(columns=["MOOD", "BUZZ"])
 
     # Simulate Portfolio
-    company_data_dict = simulate_stock(comp_table, "2022-08-10", "2022-08-12")
+    company_data_dict = utils.FinsentimAPI().\
+        simulate_stock(comp_table, "2022-08-10", "2022-08-12")
 
     ps = PortfolioSimulator(
         company_data_dict,
