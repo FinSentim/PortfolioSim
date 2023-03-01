@@ -3,8 +3,8 @@ import pytest
 import requests
 import pandas as pd
 import numpy as np
-import utils.utils
 import unittest
+from portfolio_sim import utils
 
 
 class GetCompanyDataTestCase(unittest.TestCase):
@@ -35,7 +35,7 @@ class GetCompanyDataTestCase(unittest.TestCase):
 
         mock_get.return_value = Mock(ok=True)
         mock_get.return_value.json.return_value = stock_info
-        res = utils.utils.FinsentimAPI().get_company_data("BUZZ")
+        res = utils.FinsentimAPI().get_company_data("BUZZ")
 
         stock_info = pd.DataFrame(
             columns=["Sentiment", "Volume", "Close", "Split"],
@@ -49,7 +49,7 @@ class GetCompanyDataTestCase(unittest.TestCase):
         mock_get.return_value.ok = False
 
         with pytest.raises(requests.exceptions.RequestException):
-            utils.utils.FinsentimAPI().get_company_data("BUZZ")
+            utils.FinsentimAPI().get_company_data("BUZZ")
 
 
 if __name__ == "__main__":
