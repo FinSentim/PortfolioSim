@@ -1,12 +1,10 @@
-from dash import Dash, html
+from dash import Dash
+import dash_bootstrap_components as dbc
+from visualization.components import layout
 
-app = Dash(__name__)
+app = Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
 
-app.layout = html.Div([
-    html.Div(children=[
-        html.H1("Professional Visualizer 3000", style={"textAlign": "center"}),
-    ])
-])
+app.layout = layout.create_layout(app)
 
 if __name__ == '__main__':
     app.run_server(debug=True)
