@@ -14,3 +14,5 @@ pandas
 requests
 numpy
 matplotlib
+dash>=2.9.0
+dash-dash_bootstrap_components>=1.4.0
