@@ -11,7 +11,6 @@ class GetCompanyDataTestCase(unittest.TestCase):
     @patch("requests.post")
     def test_get_company_data_when_response_ok(self, mock_get):
 
-        # httpclient -> mock
         stock_info = {
             "daily_close": [
                 [

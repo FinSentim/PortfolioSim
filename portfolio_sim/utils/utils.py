@@ -1,7 +1,15 @@
 import pandas as pd
 import requests
 import urllib.parse
+import yfinance as yf
 from abc import ABC, abstractmethod
+from requests_cache import CacheMixin, SQLiteCache
+from requests_ratelimiter import LimiterMixin, MemoryQueueBucket
+import numpy as np
+
+
+class CachedLimiterSession(CacheMixin, LimiterMixin, requests.Session):
+    """A class for caching and limiting requests"""
 
 
 class APIRetriever(ABC):
@@ -59,7 +67,7 @@ class APIRetriever(ABC):
 
 
 class FinsentimAPI(APIRetriever):
-
+    """Class for retrieving data from Finsentim API"""
     def __init__(self):
         pass
 
@@ -111,3 +119,27 @@ class FinsentimAPI(APIRetriever):
         df = df.merge(d_s, how="left", left_index=True, right_index=True)
         df.index = pd.DatetimeIndex(df.index)
         return df
+
+
+class YFinance(APIRetriever):
+    """Class for retrieving data from YFinance API"""
+    def __init__(self):
+        self.session = CachedLimiterSession(
+            per_second=0.9,
+            bucket_class=MemoryQueueBucket,
+            backend=SQLiteCache("yfinance.cache"),
+        )
+        return
+
+    def get_company_data(self, comp_name):
+        # TODO:
+        # Only retrieve the time period we need from the API
+
+        df = yf.Ticker(comp_name, session=self.session).\
+            history(period="max", actions=True)
+        df2 = df[['Close', 'Stock Splits']]
+        df2 = df2.rename(columns={'Close': 'Close', 'Stock Splits': 'Split'})
+        df2["Sentiment"] = np.NaN
+        df2["Volume"] = np.NaN
+        df2.index = pd.DatetimeIndex(df2.index)
+        return df2
