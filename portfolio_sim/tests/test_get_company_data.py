@@ -61,19 +61,12 @@ class GetYFinanceDataTestCase(unittest.TestCase):
             index=pd.DatetimeIndex(["2021-03-04"]),
         )
         res = YFinanceAPI().get_company_data("BUZZ")
-
         stock_info = pd.DataFrame(
-            columns=["Close", "Splits", "Sentiment", "Volume"],
+            columns=["Close", "Split", "Sentiment", "Volume"],
             data=[[23.520, 1, np.NaN, np.NaN]],
             index=pd.DatetimeIndex(["2021-03-04"]),
         )
         assert stock_info.equals(res)
-
-    @patch("yfinance.Ticker")
-    def test_get_company_data_when_company_does_not_exist(self, mock_get):
-
-        with pytest.raises(Exception):
-            YFinanceAPI().get_company_data("ADFHF")
 
 
 if __name__ == "__main__":

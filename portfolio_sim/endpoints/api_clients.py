@@ -82,14 +82,11 @@ class YFinanceAPI(BaseAPI):
         # TODO (Tim):
         # Only retrieve the time period we need from the API
         # Implementable when we have all three data sources in place.
-        try:
-            df = yf.Ticker(comp_name, session=self.session).\
-                history(period="max",
-                        actions=True,
-                        raise_errors=True,
-                        debug=True)
-        except Exception:
-            raise Exception(f"Company {comp_name} not found.")
+        df = yf.Ticker(comp_name, session=self.session).\
+            history(period="max",
+                    actions=True,
+                    raise_errors=True,
+                    debug=True)
 
         df2 = df[['Close', 'Stock Splits']]
         df2 = df2.rename(columns={'Close': 'Close', 'Stock Splits': 'Split'})
