@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-# Temporarily removed
 #import matplotlib.pyplot as plt
 
 
@@ -73,34 +72,42 @@ class PortfolioSimulator:
                                 money,
                             )
                         )
+                    
                 # Else, short or spot sell
                 elif portfolio_order[company] < 0:
-                    # IMPORTANT: portfolio_order[company] has a negative value here,
-                    #            keep that during arithmetics.
+                    # To improve arithmetic operation logic
+                    absTotalDailyStockValue = abs(daily_data[company].Close * portfolio_order[company])
 
                     # Sell 
-                    # TODO: Add sell support here, will likely need API to be changed: 
-                    # Check that portfolio[company] >= abs(portfolio_order[company])
-                    # if enough stocks --> 
-                        # reduce portfolio[company] 
-                        # increase money by abs(daily_data[company].Close * portfolio_order[company])
-                    # else -->
-                        # Not enough stocks, error 
+                    # TODO: we will need a variable output from the strategy that controls shorting and selling
+                    if (wantSell):
+                        if (portfolio[company] >= abs(portfolio_order[company])):
+                            portfolio[company] -= abs(portfolio_order[company])
+                            money += absTotalDailyStockValue
+                        else:
+                            # Order can't be completed
+                            raise ValueError(
+                                "Not enough stocks to sell, sell amount - {}, stock amount - {}".format(
+                                    abs(portfolio_order[company]),
+                                    portfolio[company],
+                                )
+                            )
 
                     # Short
-                    # Ensure there are enough funds for the order
-                    if (short_limit >= daily_data[company].Close * portfolio_order[company]):
-                        portfolio[company] += portfolio_order[company]
-                        short_limit -= (daily_data[company].Close * portfolio_order[company])
-                        money -= daily_data[company].Close * portfolio_order[company]
-                    else:
-                        # Order can't be completed
-                        raise ValueError(
-                            "Not enough short limit, short value - {}, short limit - {}".format(
-                                daily_data[company].Close * portfolio_order[company],
-                                short_limit,
-                            )
-                        )                    
+                    # else:
+                    #     # Ensure there are enough funds for the order
+                    #     if (short_limit >= daily_data[company].Close * portfolio_order[company]):
+                    #         portfolio[company] += portfolio_order[company]
+                    #         short_limit -= absTotalDailyStockValue
+                    #         money -= absTotalDailyStockValue
+                    #     else:
+                    #         # Order can't be completed
+                    #         raise ValueError(
+                    #             "Not enough short limit, short value - {}, short limit - {}".format(
+                    #                 absTotalDailyStockValue,
+                    #                 short_limit,
+                    #             )
+                    #         )                    
                     
 
         # Finalize portfolio evaluation
@@ -113,7 +120,6 @@ class PortfolioSimulator:
         portfolio = {company: 0 for company in portfolio}
         port_hist[date] = money
         self.port_hist_dict[strategy.name] = pd.Series(port_hist, name=strategy.name)
-        # Temporarily removed
         # self.action_hist = pd.DataFrame(action_hist)
 
     def simulate_portfolio(self):
