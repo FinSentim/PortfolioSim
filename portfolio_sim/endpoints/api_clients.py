@@ -6,7 +6,7 @@ import numpy as np
 
 from requests_cache import CacheMixin, SQLiteCache
 from requests_ratelimiter import LimiterMixin, MemoryQueueBucket
-from endpoints.base import BaseAPI
+from portfolio_sim.endpoints.base_client import BaseAPI
 
 
 class FinsentimAPI(BaseAPI):
