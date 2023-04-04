@@ -27,10 +27,15 @@ class PortfolioSimulator:
         action_hist = {}
         price_column = "Close"
         money = 1000
+        # Static $10 brokerage fee
+        tradingFee = 10
+        # Static 3% interest on shorts
+        interest = 1.03 
         # Static 50% short limit of total portfolio
         short_limit = money * 0.5
         # Init empty portfolio
         portfolio = {company: 0 for company in self.portfolio_companies}
+
         # Iterate through all days in the simulation
         for date in self.simulation_data.keys():
             daily_data = self.simulation_data[date]
@@ -50,7 +55,7 @@ class PortfolioSimulator:
             portfolio = {company: 0 for company in portfolio}
             port_hist[date] = money
             # Make decision based on given strategy
-            # The dictionary key is 'company' 
+            # Dictionary key: 'company' 
             portfolio_order = strategy.get_decision(
                 daily_data, portfolio, money, short_limit
             )
@@ -59,61 +64,59 @@ class PortfolioSimulator:
                 # Check if buy order
                 if portfolio_order[company] > 0:
                     # Ensure there are enough funds for the order
-                    if (money >= daily_data[company].Close * portfolio_order[company]):
+                    if (money >= daily_data[company].Close * portfolio_order[company] + tradingFee):
                         portfolio[company] += portfolio_order[company]
-                        money -= daily_data[company].Close * portfolio_order[company]
+                        cost = daily_data[company].Close * portfolio_order[company] + tradingFee
+                        money -= cost
+                        print("Bought {} {} shares for ${} each, total cost with fees: ${}".format(
+                            portfolio_order[company], company, daily_data[company].Close, cost))
                     else:
                         # Order can't be completed
-                        print(
-                            daily_data[company].Close, portfolio_order[company], money
-                        )
+                        print(daily_data[company].Close, portfolio_order[company], money)
                         raise ValueError(
-                            "Not enough money, purchase value - {}, money - {}".format(
-                                daily_data[company].Close * portfolio_order[company],
-                                money,
-                            )
-                        )
+                            "Not enough money, purchase value (w/ fees) - {}, money - {}".format(
+                                daily_data[company].Close * portfolio_order[company] + tradingFee, money,))
                 
-                # Else, short or sell
+                # Check if short or sell order
                 elif portfolio_order[company] < 0:
                     # To simplify arithmetics logic:
                     absTotalDailyStockValue = abs(daily_data[company].Close * portfolio_order[company])
 
                     # Sell 
-                    # TODO: we will need a variable output from the strategy that controls shorting and selling
-                    if (wantToSell):
-                        if (portfolio[company] >= abs(portfolio_order[company])):
-                            portfolio[company] -= abs(portfolio_order[company])
-                            money += absTotalDailyStockValue
-                        else:
-                            # Order can't be completed
-                            raise ValueError(
-                                "Not enough stocks to sell, sell amount - {}, stock amount - {}".format(
-                                    abs(portfolio_order[company]),
-                                    portfolio[company],
-                                )
-                            )
+                    # TODO: we will need a variable output from the strategy that controls shorting vs selling
+                    # if (wantToSell):
+                    if (portfolio[company] >= abs(portfolio_order[company])):
+                        portfolio[company] -= abs(portfolio_order[company])
+                        totalSellValue = absTotalDailyStockValue - tradingFee
+                        money += totalSellValue
+                        print("Sold {} {} shares for ${} each, total return after fees: ${}".format(
+                            abs(portfolio_order[company]), company, daily_data[company].Close, totalSellValue))
+                    else:
+                        # Order can't be completed
+                        raise ValueError(
+                            "Not enough stocks to sell, sell amount - {}, stock amount - {}".format(
+                                abs(portfolio_order[company]),
+                                portfolio[company]))
 
                     # Short
                     # else:
                     #     # Ensure there are enough funds for the order
-                    #     if (short_limit >= daily_data[company].Close * portfolio_order[company]):
+                    #     if (short_limit >= daily_data[company].Close * portfolio_order[company] * interest):
                     #         portfolio[company] += portfolio_order[company]
                     #         short_limit -= absTotalDailyStockValue
-                    #         money -= absTotalDailyStockValue
+                    #         money -= absTotalDailyStockValue * interest + tradingFee
                     #     else:
                     #         # Order can't be completed
                     #         raise ValueError(
-                    #             "Not enough short limit, short value - {}, short limit - {}".format(
-                    #                 absTotalDailyStockValue,
+                    #             "Not enough short limit, short value (w/ fees/interest) - {}, short limit - {}".format(
+                    #                 absTotalDailyStockValue * interest + tradingFee,
                     #                 short_limit,
                     #             )
                     #         )    
                 
                 # Strategy decided to hold position          
                 else:
-                    print("No trades taken today")
-
+                    print("Hold position on {}".format(company))
                     
         # Finalize portfolio evaluation
         money += sum(
