@@ -29,6 +29,7 @@ class PortfolioSimulator:
         money = 1000
         # Static 50% short limit of total portfolio
         short_limit = money * 0.5
+        # Init empty portfolio
         portfolio = {company: 0 for company in self.portfolio_companies}
         # Iterate through all days in the simulation
         for date in self.simulation_data.keys():
@@ -72,15 +73,15 @@ class PortfolioSimulator:
                                 money,
                             )
                         )
-                    
-                # Else, short or spot sell
+                
+                # Else, short or sell
                 elif portfolio_order[company] < 0:
-                    # To improve arithmetic operation logic
+                    # To simplify arithmetics logic:
                     absTotalDailyStockValue = abs(daily_data[company].Close * portfolio_order[company])
 
                     # Sell 
                     # TODO: we will need a variable output from the strategy that controls shorting and selling
-                    if (wantSell):
+                    if (wantToSell):
                         if (portfolio[company] >= abs(portfolio_order[company])):
                             portfolio[company] -= abs(portfolio_order[company])
                             money += absTotalDailyStockValue
@@ -107,9 +108,13 @@ class PortfolioSimulator:
                     #                 absTotalDailyStockValue,
                     #                 short_limit,
                     #             )
-                    #         )                    
-                    
+                    #         )    
+                
+                # Strategy decided to hold position          
+                else:
+                    print("No trades taken today")
 
+                    
         # Finalize portfolio evaluation
         money += sum(
             [
@@ -123,19 +128,23 @@ class PortfolioSimulator:
         # self.action_hist = pd.DataFrame(action_hist)
 
     def simulate_portfolio(self):
+            # Iterate through all strategies and simulate each one
         for strategy in self.strategies:
             self.simulate_strategy(strategy)
+        # Create a DataFrame containing the portfolio history for each strategy
         self.results_df = pd.DataFrame(self.port_hist_dict)
 
     def compare_baselines(self, cat="None"):
         if self.baselines is None:
             return None
+        # Merge baseline data with the results DataFrame
         self.comparison_res = self.baselines.merge(
             self.results_df,
             left_index=True,
             right_index=True,
             how="right",
         )
+        # Normalize the comparison data by dividing by the first row
         self.comparison_res = self.comparison_res / self.comparison_res.iloc[0]
         return self.comparison_res
 
