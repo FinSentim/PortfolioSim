@@ -22,9 +22,14 @@ class MaxSentimentLongStrategy(BaseStrategy):
         """
         Decision Function for Default Strategy
         Args:
-            daily_data: Dataframe of daily data containing price information and any other information for each company
-            portfolio: Dictionary of number of shares of each company in the portfolio
+            daily_data: Dataframe of daily data containing price
+            information and any other information for each company
+
+            portfolio: Dictionary of number of shares of
+            each company in the portfolio
+
             money: Available money to invest
+
             short_limit: Limit of money to invest in short positions
         Returns:
             Dictionary of number of shares to buy or sell for each company
@@ -64,9 +69,14 @@ class MinSentimentShortStrategy(BaseStrategy):
         """
         Decision Function for Default Strategy
         Args:
-            daily_data: Dataframe of daily data containing price information and any other information for each company
-            portfolio: Dictionary of number of shares of each company in the portfolio
+            daily_data: Dataframe of daily data containing price information
+            and any other information for each company
+
+            portfolio: Dictionary of number of shares of
+            each company in the portfolio
+
             money: Available money to invest
+
             short_limit: Limit of money to invest in short positions
         Returns:
             Dictionary of number of shares to buy or sell for each company
@@ -90,7 +100,8 @@ class MinSentimentShortStrategy(BaseStrategy):
 
 class MinMaxSentimentStrategy(BaseStrategy):
     """
-    Long-Short Strategy, buys the company with the highest sentiment each day and shorts the company with the lowest sentiment each day
+    Long-Short Strategy, buys the company with the highest sentiment each
+    day and shorts the company with the lowest sentiment each day
     """
 
     def __init__(self):
@@ -106,9 +117,14 @@ class MinMaxSentimentStrategy(BaseStrategy):
         """
         Decision Function for Default Strategy
         Args:
-            daily_data: Dataframe of daily data containing price information and any other information for each company
-            portfolio: Dictionary of number of shares of each company in the portfolio
+            daily_data: Dataframe of daily data containing price information
+            and any other information for each company
+
+            portfolio: Dictionary of number of shares of each company in
+            the portfolio
+
             money: Available money to invest
+
             short_limit: Limit of money to invest in short positions
         Returns:
             Dictionary of number of shares to buy or sell for each company
