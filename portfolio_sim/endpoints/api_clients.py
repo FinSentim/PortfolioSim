@@ -14,7 +14,7 @@ class FinsentimAPI(BaseAPI):
     def __init__(self):
         pass
 
-    def get_company_data(self, comp_name):
+    def _get_company_data(self, comp_name):
         url = """https://api.finsentim.com/latest/
                  companies/data_dict/
                  ?key=jhcfkw0dfqe0gh8zw2eaun82yxggpevd%20&
@@ -78,7 +78,7 @@ class YFinanceAPI(BaseAPI):
         )
         return
 
-    def get_company_data(self, comp_name):
+    def _get_company_data(self, comp_name):
         # TODO (Tim):
         # Only retrieve the time period we need from the API
         # Implementable when we have all three data sources in place.
@@ -101,7 +101,7 @@ class AlphaVantageAPI(BaseAPI):
         self.api_key = "H1ATKVP3UMENMSPG"
     
 
-    def get_company_data(self, comp_name):
+    def _get_company_data(self, comp_name):
         # Get daily close and stock splits data
         url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={comp_name}&apikey={self.api_key}&datatype=json&outputsize=full"
         res = requests.get(url)
@@ -114,7 +114,7 @@ class AlphaVantageAPI(BaseAPI):
         df = pd.DataFrame(
             {
                 "Close": [
-                    round(float(res["Time Series (Daily)"][date]["5. adjusted close"]), 3)
+                    float(res["Time Series (Daily)"][date]["5. adjusted close"])
                     for date in res["Time Series (Daily)"]
                 ],
                 "Split": [
@@ -130,3 +130,11 @@ class AlphaVantageAPI(BaseAPI):
         df.index.name = "Date"
 
         return df
+    
+av = AlphaVantageAPI()
+company_data = av.get_company_data("AAPL", "2019-01-01", "2020-01-01")
+
+av = YFinanceAPI()
+company_data = av.get_company_data("AAPL", "2019-01-01", "2020-01-01")
+
+print(company_data)

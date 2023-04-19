@@ -10,9 +10,15 @@ class BaseAPI(ABC):
         pass
 
     @abstractmethod
-    def get_company_data(self, comp_name):
+    def _get_company_data(self, comp_name):
         pass
-
+    
+    def get_company_data(self, comp_name, start_date, end_date):
+        data = self._get_company_data(comp_name)
+        data = self.post_process_data(data, start_date, end_date)
+        return data
+    
+    
     def simulate_stock(self, companies,
                        start_date,
                        end_date):
@@ -55,3 +61,21 @@ class BaseAPI(ABC):
             }
         )
         return all_indexes.loc[start_date:end_date]
+    
+    def post_process_data(self, df, start_date, end_date):
+        df = self.date_filter(df, start_date, end_date)
+        
+        
+        # Round the float columns to 4 decimal places
+        float_cols = df.select_dtypes(include='float').columns
+        df_new = df.copy()
+        df_new.loc[:, float_cols] = df_new.loc[:, float_cols].round(4)  
+        
+        # more post processing here
+        
+        return df_new
+    
+    def date_filter(self, df, start_date, end_date):
+        df.index = pd.to_datetime(df.index)
+        df.index = df.sort_index().index
+        return df.loc[start_date:end_date]
