@@ -21,9 +21,10 @@ class DefaultDecisionFunction(BaseStrategy):
         """
         Decision Function for Default Strategy
         Args:
-            daily_data: Dataframe of daily data containing price information and any other information for each company
-            portfolio: Dictionary of number of shares of each company in the portfolio
-            money: Available money to invest
+            daily_data: Dataframe of daily data containing price information
+            and any other information for each company
+            portfolio: Dictionary of number of shares of each company in the
+            portfolio money: Available money to invest
             short_limit: Limit of money to invest in short positions
         Returns:
             Dictionary of number of shares to buy or sell for each company
@@ -31,7 +32,8 @@ class DefaultDecisionFunction(BaseStrategy):
         new_portfolio = portfolio.copy()
         new_money = money
         new_portfolio = {
-            company: (new_money / len(new_portfolio)) / daily_data[company].Close
+            company: (new_money / len(new_portfolio)) /
+            daily_data[company].Close
             for company in new_portfolio
         }
         new_money = 0

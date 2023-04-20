@@ -95,9 +95,8 @@ class PropMinSentimentShortStrategy(BaseStrategy):
         for company in daily_data:
             if daily_data[company].Volume > 40:
                 sentiments[company] = daily_data[company].Sentiment
-        sentiments = pd.Series(sentiments, dtype="float64").sort_values(ascending=True)[
-            : self.limit
-        ]
+        sentiments = pd.Series(sentiments, dtype="float64").sort_values(
+            ascending=True)[: self.limit]
         if len(sentiments) > 0:
             moneys = (
                 (np.arange(len(sentiments)) + 1)
