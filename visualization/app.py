@@ -4,7 +4,7 @@ from visualization.components import layout
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
 
-app.layout = layout.create_layout(app)
+app.layout = layout.create_layout()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run_server(debug=True)

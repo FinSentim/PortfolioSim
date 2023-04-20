@@ -26,7 +26,7 @@ single_dropdown = html.Div(
         optionHeight=50,
         placeholder="Select strategy",
         persistence=True,
-        id=ids.SINGLE_STRAT_DROPDOWN
+        id=ids.SINGLE_STRAT_DROPDOWN,
     )
 )
 
@@ -40,7 +40,6 @@ def create_multi_dropdown(stock_id, strategies) -> html.Div:
             value=[],
             persistence=True,
             id={"type": f"{ids.MULTI_STRAT_DROPDOWN}", "index": f"{stock_id}"},
-            className="dash-bootstrap",
         )
 
 
@@ -69,17 +68,16 @@ def show_hide_strategy_card(strategy, stocks):
                 single_dropdown,
                 style={'display': 'none'},
                 id=ids.SINGLE_STRAT_CARD,
-                className="dash-bootstrap",
                 ),
             html.Div(
                 [create_multi_dropdown(stock, strategies) for stock in stocks],
                 style={'display': 'block'},
                 id=ids.MULTI_STRAT_CARD,
-                className="dash-bootstrap",
             )
             ]
 
 
+""""
 @callback(
     Output("output", "children"),
     Input(ids.SELECTED_STRATS, "data")
@@ -88,6 +86,7 @@ def show_queries(strategies) -> html.Div:
     if not strategies:
         raise PreventUpdate
     return [html.Div(f"{k}: {v}") for k, v in strategies.items()]
+"""
 
 
 @callback(
