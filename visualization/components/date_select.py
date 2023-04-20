@@ -8,7 +8,7 @@ date_selector = html.Div([
         dcc.DatePickerRange(
             start_date_placeholder_text="Start Period",
             end_date_placeholder_text="End Period",
-            calendar_orientation='horizontal',
+            calendar_orientation="horizontal",
             id=ids.DATE_SELECT,
         ),
     ],
@@ -25,7 +25,6 @@ def update_selected_date(start_date, end_date):
         start_date_object = date.fromisoformat(start_date)
         end_date_object = date.fromisoformat(end_date)
         x = {"start_date": start_date_object, "end_date": end_date_object}
-        print(x)
         return x
     else:
         return {}

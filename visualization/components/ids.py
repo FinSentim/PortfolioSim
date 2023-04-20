@@ -12,3 +12,4 @@ DATE_SELECT = "date-select"
 
 SIMULATE_BUTTON = "simulate-button"
 ERROR_SIMULATE_BUTTON = "error-simulate-button"
+SIMULATION_DATA = "simulation-data"

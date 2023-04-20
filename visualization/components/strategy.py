@@ -4,7 +4,12 @@ from dash.exceptions import PreventUpdate
 from . import ids
 
 
-strategies = [f"Strategy {i}" for i in range(1, 50)]
+strategies = ["MaxSentimentLong",
+              "MinSentimentShort",
+              "MinMaxSentiment",
+              "PropMaxSentimentLong",
+              "PropMinSentimentShort",
+              "PropMinMaxSentiment"]
 
 
 radio_items = html.Div(
@@ -75,18 +80,6 @@ def show_hide_strategy_card(strategy, stocks):
                 id=ids.MULTI_STRAT_CARD,
             )
             ]
-
-
-""""
-@callback(
-    Output("output", "children"),
-    Input(ids.SELECTED_STRATS, "data")
-)
-def show_queries(strategies) -> html.Div:
-    if not strategies:
-        raise PreventUpdate
-    return [html.Div(f"{k}: {v}") for k, v in strategies.items()]
-"""
 
 
 @callback(

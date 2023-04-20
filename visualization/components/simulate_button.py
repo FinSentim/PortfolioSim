@@ -1,8 +1,9 @@
 import dash_bootstrap_components as dbc
-from dash import html, dcc, callback, Input, Output, ALL, State, ctx
+from dash import html, callback, Input, Output, State
 from . import ids
 from dash.exceptions import PreventUpdate
-import requests
+import random
+import pandas as pd
 
 button = html.Div([
         dbc.Button(
@@ -16,7 +17,7 @@ button = html.Div([
 
 
 @callback(
-    Output("graph", "children"),
+    Output(ids.SIMULATION_DATA, "data"),
     Output(ids.ERROR_SIMULATE_BUTTON, "children"),
     Input(ids.SIMULATE_BUTTON, "n_clicks"),
     State(ids.SELECTED_STOCKS, "data"),
@@ -37,17 +38,23 @@ def on_button_click(clicks, selected_stocks, selected_strats, selected_date):
     if errs:
         err_msg = f"Select {', '.join(errs)}"
         return None, html.Div([html.P(err_msg)])
-    return fetch_data(), None
+    return fetch_data(selected_stocks, selected_strats, selected_date), None
 
 
-def fetch_data():
-    x_values = [1, 2, 3, 4, 5]
-    y_values = [x**2 for x in x_values]
-    graph = dcc.Graph(
-                id='example-graph',
-                figure={
-                    'data': [{'x': x_values, 'y': y_values, 'type': 'line'}],
-                    'layout': {'title': 'Graph of y = x^2'}
-                }
-            )
-    return graph
+def fetch_data(stocks, strategies, dates):
+    # Request should happen here, mock data for now.
+    data = []
+    date_list = pd.date_range(start=dates["start_date"], end=dates["end_date"])
+    for stock, strats in strategies.items():
+        if isinstance(strats, list):
+            for strat in strats:
+                for d in date_list:
+                    data.append((stock, strat, d, random.random()))
+        else:
+            for d in date_list:
+                data.append((stock, strats, d, random.random()))
+
+    df = pd.DataFrame(data, columns=['stock', 'strategy', 'date', 'return'])
+    return df.to_json()
+    # print(df_pivot.loc[:, ('Stock 3', slice(None))])
+    # return graph

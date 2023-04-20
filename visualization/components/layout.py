@@ -5,12 +5,14 @@ from visualization.components import (
     stock_select,
     strategy,
     date_select,
-    simulate_button
+    simulate_button,
+    plot
 )
 
 
 def create_layout() -> html.Div:
     return html.Div([
+        html.Div([
             dbc.Row(dbc.Col(html.H1("FinSentim Visualization"), width=8),
                     justify="start",
                     align="center",
@@ -39,8 +41,7 @@ def create_layout() -> html.Div:
                         )),
                 dbc.Row([simulate_button.button]),
                 dbc.Row(html.Div(id=ids.ERROR_SIMULATE_BUTTON, style={"color": "red", "font-size": "1.5em"}))
-            ], style={"position": "relative", "left": "30px", "text-align": "center"}),
-                style={"min-width": "300px", "max-width": "400px"}, width=3),
-            html.Br(),
-            dbc.Row(html.Div(id="graph"))
-    ])
+            ], style={"max-width": "500px", "text-align": "center"})),
+            ]),
+        html.Div(plot.graph, style={"padding": "10px"})
+    ], style={"display": "flex", "flex-wrap": "wrap", "justify-content": "center"})
