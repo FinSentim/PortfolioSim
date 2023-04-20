@@ -6,7 +6,8 @@ from portfolio_sim.strategies.base_strategy import BaseStrategy
 
 class PropMaxSentimentLongStrategy(BaseStrategy):
     """
-    Long Strategy, ranks companies by sentiment and buys the amount of money proportional to the sentiment of each company
+    Long Strategy, ranks companies by sentiment and buys the amount of money
+    proportional to the sentiment of each company
     """
 
     def __init__(self):
@@ -23,9 +24,10 @@ class PropMaxSentimentLongStrategy(BaseStrategy):
         """
         Decision Function for Default Strategy
         Args:
-            daily_data: Dataframe of daily data containing price information and any other information for each company
-            portfolio: Dictionary of number of shares of each company in the portfolio
-            money: Available money to invest
+            daily_data: Dataframe of daily data containing price information
+            and any other information for each company
+            portfolio: Dictionary of number of shares of each company in the
+            portfolio money: Available money to invest
             short_limit: Limit of money to invest in short positions
         Returns:
             Dictionary of number of shares to buy or sell for each company
@@ -53,7 +55,8 @@ class PropMaxSentimentLongStrategy(BaseStrategy):
 
 class PropMinSentimentShortStrategy(BaseStrategy):
     """
-    Short Strategy, ranks companies by sentiment and shorts the amount of money proportional to the sentiment of each company
+    Short Strategy, ranks companies by sentiment and shorts the amount of
+    money proportional to the sentiment of each company
     """
 
     def __init__(self):
@@ -71,7 +74,8 @@ class PropMinSentimentShortStrategy(BaseStrategy):
         Decision Function for Default Strategy
         Args:
             daily_data: Dataframe of daily data containing price information and any other information for each company
-            portfolio: Dictionary of number of shares of each company in the portfolio
+            portfolio: Dictionary of number of shares of each company in the
+            portfolio
             money: Available money to invest
             short_limit: Limit of money to invest in short positions
         Returns:
@@ -83,9 +87,8 @@ class PropMinSentimentShortStrategy(BaseStrategy):
         for company in daily_data:
             if daily_data[company].Volume > 40:
                 sentiments[company] = daily_data[company].Sentiment
-        sentiments = pd.Series(sentiments, dtype="float64").sort_values(ascending=True)[
-            : self.limit
-        ]
+        sentiments = pd.Series(sentiments, dtype="float64").sort_values(
+            ascending=True)[: self.limit]
         if len(sentiments) > 0:
             moneys = (
                 (np.arange(len(sentiments)) + 1)
@@ -100,7 +103,9 @@ class PropMinSentimentShortStrategy(BaseStrategy):
 
 class PropMinMaxSentimentStrategy(BaseStrategy):
     """
-    Long-Short Strategy, ranks companies by sentiment and buys the amount of money proportional to the sentiment of each company and shorts the amount of money proportional to the sentiment of each company
+    Long-Short Strategy, ranks companies by sentiment and buys the amount of
+    money proportional to the sentiment of each company and shorts the amount
+    of money proportional to the sentiment of each company
     """
 
     def __init__(self):
@@ -118,8 +123,10 @@ class PropMinMaxSentimentStrategy(BaseStrategy):
         """
         Decision Function for Default Strategy
         Args:
-            daily_data: Dataframe of daily data containing price information and any other information for each company
-            portfolio: Dictionary of number of shares of each company in the portfolio
+            daily_data: Dataframe of daily data containing price information
+            and any other information for each company
+            portfolio: Dictionary of number of shares of each company in the
+            portfolio
             money: Available money to invest
             short_limit: Limit of money to invest in short positions
         Returns:
@@ -137,12 +144,8 @@ class PropMinMaxSentimentStrategy(BaseStrategy):
             curr_lim = len(sentiments) - 1
         else:
             curr_lim = self.limit
-        long_sentiments = pd.Series(sentiments, dtype="float64").sort_values(
-            ascending=False
-        )[:curr_lim]
-        short_sentiments = pd.Series(sentiments, dtype="float64").sort_values(
-            ascending=True
-        )[: self.short_lim_length]
+        long_sentiments = pd.Series(sentiments, dtype="float64").sort_values(ascending=False)[:curr_lim]
+        short_sentiments = pd.Series(sentiments, dtype="float64").sort_values(ascending=True)[: self.short_lim_length]
 
         if len(long_sentiments) > 0:
             moneys = (
