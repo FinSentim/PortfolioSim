@@ -47,11 +47,9 @@ class PortfolioSimulator:
             action_hist[date] = portfolio_order
             for company in portfolio_order:
                 if portfolio_order[company] > 0:
-                    if money >= daily_data[company].Close * portfolio_order[
-                            company]:
+                    if money >= daily_data[company].Close * portfolio_order[company]:
                         portfolio[company] += portfolio_order[company]
-                        money -= daily_data[company].Close * portfolio_order[
-                            company]
+                        money -= daily_data[company].Close * portfolio_order[company]
                     else:
                         print(
                             daily_data[company].Close,
@@ -59,25 +57,16 @@ class PortfolioSimulator:
                             money
                         )
                         raise ValueError(
-                            "Not enough money, purchase value - {}, money - {}"
-                            .format(
-                                daily_data[company].Close * portfolio_order[
-                                    company],
-                                money,
-                            )
+                            "Not enough money, purchase value - {}, money - {}".format(
+                                daily_data[company].Close * portfolio_order[company], money)
                         )
                 elif portfolio_order[company] < 0:
                     if (
-                        short_limit
-                        >= daily_data[company].Close * portfolio_order[company]
+                        short_limit >= daily_data[company].Close * portfolio_order[company]
                     ):
                         portfolio[company] += portfolio_order[company]
-                        short_limit -= (
-                            daily_data[company].Close * portfolio_order[
-                                company]
-                        )
-                        money -= daily_data[company].Close * portfolio_order[
-                            company]
+                        short_limit -= (daily_data[company].Close * portfolio_order[company])
+                        money -= daily_data[company].Close * portfolio_order[company]
                     else:
                         raise ValueError("Not enough short limit")
 

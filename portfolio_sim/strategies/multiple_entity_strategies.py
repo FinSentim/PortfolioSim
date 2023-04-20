@@ -73,8 +73,7 @@ class PropMinSentimentShortStrategy(BaseStrategy):
         """
         Decision Function for Default Strategy
         Args:
-            daily_data: Dataframe of daily data containing price information
-            and any other information for each company
+            daily_data: Dataframe of daily data containing price information and any other information for each company
             portfolio: Dictionary of number of shares of each company in the
             portfolio
             money: Available money to invest
@@ -145,12 +144,8 @@ class PropMinMaxSentimentStrategy(BaseStrategy):
             curr_lim = len(sentiments) - 1
         else:
             curr_lim = self.limit
-        long_sentiments = pd.Series(sentiments, dtype="float64").sort_values(
-            ascending=False
-        )[:curr_lim]
-        short_sentiments = pd.Series(sentiments, dtype="float64").sort_values(
-            ascending=True
-        )[: self.short_lim_length]
+        long_sentiments = pd.Series(sentiments, dtype="float64").sort_values(ascending=False)[:curr_lim]
+        short_sentiments = pd.Series(sentiments, dtype="float64").sort_values(ascending=True)[: self.short_lim_length]
 
         if len(long_sentiments) > 0:
             moneys = (
