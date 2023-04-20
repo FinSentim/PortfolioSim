@@ -17,6 +17,7 @@ class DefaultDecisionFunction(BaseStrategy):
         portfolio: dict,
         money: float,
         short_limit: float,
+        wantToSell: bool,
     ) -> dict:
         """
         Decision Function for Default Strategy

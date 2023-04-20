@@ -6,8 +6,7 @@ from portfolio_sim.strategies.base_strategy import BaseStrategy
 
 class PropMaxSentimentLongStrategy(BaseStrategy):
     """
-    Long Strategy, ranks companies by sentiment and buys the
-    amount of money proportional to the sentiment of each company
+    Long Strategy, ranks companies by sentiment and buys the amount of money proportional to the sentiment of each company
     """
 
     def __init__(self):
@@ -20,23 +19,19 @@ class PropMaxSentimentLongStrategy(BaseStrategy):
         portfolio: dict,
         money: float,
         short_limit: float,
+        wantToSell: bool,
     ) -> dict:
         """
         Decision Function for Default Strategy
         Args:
-            daily_data: Dataframe of daily data containing price
-            information and any other information for each company
-
-            portfolio: Dictionary of number of shares of each
-            company in the portfolio
-
+            daily_data: Dataframe of daily data containing price information and any other information for each company
+            portfolio: Dictionary of number of shares of each company in the portfolio
             money: Available money to invest
-
             short_limit: Limit of money to invest in short positions
         Returns:
             Dictionary of number of shares to buy or sell for each company
         """
-        new_portfolio = {company: 0 for company in portfolio}
+        new_portfolio = {company: {"shares": 0, "wantToSell": wantToSell} for company in portfolio}
         sentiments = {}
         for company in daily_data:
             if daily_data[company].Volume > 40:
@@ -51,16 +46,16 @@ class PropMaxSentimentLongStrategy(BaseStrategy):
                 / (np.arange(len(sentiments)) + 1).sum()
             )[::-1] * money
             for i in range(len(sentiments)):
-                new_portfolio[sentiments.index[i]] += np.floor(
+                new_portfolio[sentiments.index[i]]["shares"] += np.floor(
                     moneys[i] / daily_data[sentiments.index[i]].Close
                 )
+                new_portfolio[sentiments.index[i]]["wantToSell"] = False
         return new_portfolio
 
 
 class PropMinSentimentShortStrategy(BaseStrategy):
     """
-    Short Strategy, ranks companies by sentiment and shorts
-    the amount of money proportional to the sentiment of each company
+    Short Strategy, ranks companies by sentiment and shorts the amount of money proportional to the sentiment of each company
     """
 
     def __init__(self):
@@ -73,24 +68,20 @@ class PropMinSentimentShortStrategy(BaseStrategy):
         portfolio: dict,
         money: float,
         short_limit: float,
+        wantToSell: bool,
     ) -> dict:
         """
         Decision Function for Default Strategy
         Args:
-            daily_data: Dataframe of daily data containing price
-            information and any other information for each company
-
-            portfolio: Dictionary of number of shares of each
-            company in the portfolio
-
+            daily_data: Dataframe of daily data containing price information and any other information for each company
+            portfolio: Dictionary of number of shares of each company in the portfolio
             money: Available money to invest
-
             short_limit: Limit of money to invest in short positions
         Returns:
             Dictionary of number of shares to buy or sell for each company
         """
 
-        new_portfolio = {company: 0 for company in portfolio}
+        new_portfolio = {company: {"shares": 0, "wantToSell": wantToSell} for company in portfolio}
         sentiments = {}
         for company in daily_data:
             if daily_data[company].Volume > 40:
@@ -104,17 +95,16 @@ class PropMinSentimentShortStrategy(BaseStrategy):
                 / (np.arange(len(sentiments)) + 1).sum()
             )[::-1] * short_limit
             for i in range(len(sentiments)):
-                new_portfolio[sentiments.index[i]] -= np.floor(
+                new_portfolio[sentiments.index[i]]["shares"] -= np.floor(
                     moneys[i] / daily_data[sentiments.index[i]].Close
                 )
+                new_portfolio[sentiments.index[i]]["wantToSell"] = False
         return new_portfolio
 
 
 class PropMinMaxSentimentStrategy(BaseStrategy):
     """
-    Long-Short Strategy, ranks companies by sentiment and buys the
-    amount of money proportional to the sentiment of each company and
-    shorts the amount of money proportional to the sentiment of each company
+    Long-Short Strategy, ranks companies by sentiment and buys the amount of money proportional to the sentiment of each company and shorts the amount of money proportional to the sentiment of each company
     """
 
     def __init__(self):
@@ -128,24 +118,20 @@ class PropMinMaxSentimentStrategy(BaseStrategy):
         portfolio: dict,
         money: float,
         short_limit: float,
+        wantToSell: bool,
     ) -> dict:
         """
         Decision Function for Default Strategy
         Args:
-            daily_data: Dataframe of daily data containing price
-            information and any other information for each company
-
-            portfolio: Dictionary of number of shares of each
-            company in the portfolio
-
+            daily_data: Dataframe of daily data containing price information and any other information for each company
+            portfolio: Dictionary of number of shares of each company in the portfolio
             money: Available money to invest
-
             short_limit: Limit of money to invest in short positions
         Returns:
             Dictionary of number of shares to buy or sell for each company
         """
 
-        new_portfolio = {company: 0 for company in portfolio}
+        new_portfolio = {company: {"shares": 0, "wantToSell": wantToSell} for company in portfolio}
         sentiments = {}
         for company in daily_data:
             if daily_data[company].Volume > 40:
@@ -169,7 +155,7 @@ class PropMinMaxSentimentStrategy(BaseStrategy):
                 / (np.arange(len(long_sentiments)) + 1).sum()
             )[::-1] * money
             for i in range(len(long_sentiments)):
-                new_portfolio[long_sentiments.index[i]] += np.floor(
+                new_portfolio[long_sentiments.index[i]]["shares"] += np.floor(
                     moneys[i] / daily_data[long_sentiments.index[i]].Close
                 )
         if len(short_sentiments) > 0:
@@ -178,7 +164,8 @@ class PropMinMaxSentimentStrategy(BaseStrategy):
                 / (np.arange(len(short_sentiments)) + 1).sum()
             )[::-1] * short_limit
             for i in range(len(short_sentiments)):
-                new_portfolio[short_sentiments.index[i]] -= np.floor(
+                new_portfolio[short_sentiments.index[i]]["shares"] -= np.floor(
                     moneys[i] / daily_data[short_sentiments.index[i]].Close
                 )
+                new_portfolio[sentiments.index[i]]["wantToSell"] = False
         return new_portfolio
