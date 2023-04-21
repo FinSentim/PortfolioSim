@@ -45,6 +45,7 @@ class PortfolioSimulator:
         # Init empty portfolio
         portfolio = {company: 0 for company in self.portfolio_companies}
         short_positions = {company: (0, 0) for company in self.portfolio_companies}
+        closeShortPos = False
 
         # Iterate through all days in the simulation
         for date in self.simulation_data.keys():
@@ -121,11 +122,15 @@ class PortfolioSimulator:
 
                         # Ensure there is enough short_limit for the order
                         # Short_limit < money, since short_limit is 50% of money
-                        if (short_limit >= daily_data[company].Close * currentOrder * interest):
+                        if short_limit >= daily_data[company].Close * currentOrder * interest:
                             portfolio[company] += currentOrder
                             # Update short_positions with order size and the day's stock price
                             # This is required since the result of the short is based on entry price
-                            short_positions[company] = (currentOrder, daily_data[company].Close)
+                            short_positions[company][0] += currentOrder
+                            if short_positions[company][0] != 0:
+                                short_positions[company][1] = (short_positions[company][1] * (short_positions[company][0] - currentOrder) + daily_data[company].Close * currentOrder) / short_positions[company][0]
+                            else:
+                                short_positions[company][1] = daily_data[company].Close
                             short_limit -= absTotalDailyStockValue
                             money -= absTotalDailyStockValue * interest + tradingFee
                             print("Shorted {} {} shares for ${} each, total cost with fees and interest: ${}".format(
@@ -138,7 +143,15 @@ class PortfolioSimulator:
                                     short_limit,
                                 )
                             )
-                
+                elif closeShortPos:
+                            if (portfolio[company] >= abs(currentOrder)):
+                                portfolio[company] -= abs(currentOrder)
+                                money += (short_positions[company][1] - daily_data[company].Close) * currentOrder
+                                short_positions[company][0] -= abs(currentOrder)
+                                if short_positions[company][0] == 0:
+                                    short_positions[1] = 0
+
+
                 # Strategy decided to hold position          
                 else:
                     print("Hold current position on {}".format(company))
