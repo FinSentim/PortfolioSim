@@ -98,13 +98,18 @@ class YFinanceAPI(BaseAPI):
 class AlphaVantageAPI(BaseAPI):
     """Class for retrieving data from YFinance API"""
     def __init__(self):
+        self.session = CachedLimiterSession(
+            per_second=0.9,
+            bucket_class=MemoryQueueBucket,
+            backend=SQLiteCache("alphavantage.cache"),
+        )
         self.api_key = "H1ATKVP3UMENMSPG"
     
 
     def _get_company_data(self, comp_name):
         # Get daily close and stock splits data
         url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={comp_name}&apikey={self.api_key}&datatype=json&outputsize=full"
-        res = requests.get(url)
+        res = self.session.get(url)
         if not res.ok:
             raise requests.exceptions.RequestException(
                 f"Something went wrong with the request. Status code: {res.status_code}"
@@ -131,10 +136,19 @@ class AlphaVantageAPI(BaseAPI):
 
         return df
     
+    
+url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=LYFT&apikey=H1ATKVP3UMENMSPG&datatype=json&outputsize=compact"
+
+res = requests.get(url)
+
+print(res.json())
+
 av = AlphaVantageAPI()
-company_data = av.get_company_data("AAPL", "2019-01-01", "2020-01-01")
+company_data = av.get_company_data("MSFT")
+
+print(company_data)
 
 av = YFinanceAPI()
-company_data = av.get_company_data("AAPL", "2019-01-01", "2020-01-01")
+company_data = av.get_company_data("MSFT")
 
 print(company_data)

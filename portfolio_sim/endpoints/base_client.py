@@ -13,7 +13,7 @@ class BaseAPI(ABC):
     def _get_company_data(self, comp_name):
         pass
     
-    def get_company_data(self, comp_name, start_date, end_date):
+    def get_company_data(self, comp_name, start_date=None, end_date=None):
         data = self._get_company_data(comp_name)
         data = self.post_process_data(data, start_date, end_date)
         return data
@@ -75,7 +75,11 @@ class BaseAPI(ABC):
         
         return df_new
     
-    def date_filter(self, df, start_date, end_date):
+    def date_filter(self, df, start_date=None, end_date=None):
         df.index = pd.to_datetime(df.index)
         df.index = df.sort_index().index
+        
+        start_date = start_date if start_date else df.index.min()
+        end_date = end_date if end_date else df.index.max()
+        
         return df.loc[start_date:end_date]
