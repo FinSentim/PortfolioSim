@@ -10,9 +10,27 @@ class BaseAPI(ABC):
 
     @abstractmethod
     def _get_company_data(self, comp_name):
+        """Abstract implementation of get_company_data
+        Make implementation for each API 
+        
+        Args: 
+            the ticker of the company
+        Return: 
+            A dataframe with the retreived data
+        """
+        
         pass
     
     def get_company_data(self, comp_name, start_date=None, end_date=None):
+        """Gets the company data from selected API
+        
+        Args:
+            comp_name: The ticker of the company
+            start_date: The date to start retreiving data from
+            end_date: The date to stop retreiving data from
+        Return: 
+            A dataframe with the retreived data
+        """
         data = self._get_company_data(comp_name)
         data = self.post_process_data(data, start_date, end_date)
         return data
@@ -62,6 +80,15 @@ class BaseAPI(ABC):
         return all_indexes.loc[start_date:end_date]
     
     def post_process_data(self, df, start_date, end_date):
+        """Post processes the data retreived from the API
+        
+        Args:
+            comp_name: The DataFrame containing the data
+            start_date: The date to start retreiving data from
+            end_date: The date to stop retreiving data from
+        Return: 
+            The updated DataFrame
+        """
         df = self.date_filter(df, start_date, end_date)
         
         # Round the float columns to 4 decimal places
@@ -74,6 +101,17 @@ class BaseAPI(ABC):
         return df_new
     
     def date_filter(self, df, start_date=None, end_date=None):
+        """Takes a dataframe and filters out the dates that are not in the range
+        
+        Args:
+            df: The DataFrame containing the data
+            start_date: The date to start retreiving data from
+            end_date: The date to stop retreiving data from
+        Return: 
+            The updated DataFrame
+        """
+        
+        
         df.index = pd.to_datetime(df.index)
         df = df.sort_index()
         

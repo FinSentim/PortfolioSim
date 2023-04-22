@@ -18,13 +18,16 @@ class FinsentimAPI(BaseAPI):
             backend=SQLiteCache("finsentim.cache"),
         )
 
+    # get_company_data implementation for Finsentim API
     def _get_company_data(self, comp_name):
+        # format the url request with the api key
         url = """https://api.finsentim.com/latest/
                  companies/data_dict/
                  ?key=jhcfkw0dfqe0gh8zw2eaun82yxggpevd%20&
                  company={}""".format(
                     urllib.parse.quote(comp_name)
                 )
+        # make the request, store it using self.session
         res = self.session.post(
             url,
             json={
@@ -43,10 +46,14 @@ class FinsentimAPI(BaseAPI):
                     with the request.
                     Status code: {res.status_code}"""
             )
+            
+        # the returned response to json
         res = res.json()
 
+        # create a dataframe for each data type
         d_c = pd.DataFrame({"Close": res["daily_close"][1]},
                            index=res["daily_close"][0])
+
 
         d_s = pd.DataFrame(
             {"Split": res["stock_splits"][1]}, index=res["stock_splits"][0]
@@ -61,6 +68,8 @@ class FinsentimAPI(BaseAPI):
             {"Sentiment": res["daily_twitter_tweets_sentiment"][1]},
             index=res["daily_twitter_tweets_sentiment"][0],
         )
+        
+        # merge the dataframes
         df = d_t.merge(d_v, how="outer", left_index=True, right_index=True)
         df = df.merge(d_c, how="outer", left_index=True, right_index=True)
         df = df.merge(d_s, how="left", left_index=True, right_index=True)
@@ -98,8 +107,11 @@ class YFinanceAPI(BaseAPI):
         df2.index = pd.DatetimeIndex(df2.index)
         return df2
     
+
 class AlphaVantageAPI(BaseAPI):
-    """Class for retrieving data from YFinance API"""
+    """Class for retrieving data from AlphaVantage API"""
+    
+    # set the api key and session cache
     def __init__(self):
         self.session = CachedLimiterSession(
             per_second=0.9,
@@ -108,23 +120,33 @@ class AlphaVantageAPI(BaseAPI):
         )
         self.api_key = "H1ATKVP3UMENMSPG"
     
-
+    
     def _get_company_data(self, comp_name):
+        
         # Get daily close and stock splits data
         url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={comp_name}&apikey={self.api_key}&datatype=json&outputsize=full"
+        
+        # get the response, store it using self.session
         res = self.session.get(url)
+        
+        # if an error occured, raise an exception
         if not res.ok:
             raise requests.exceptions.RequestException(
                 f"Something went wrong with the request. Status code: {res.status_code}"
             )
+            
+        # the returned response to json
         res = res.json()
 
+        # create a dataframe for each data type
         df = pd.DataFrame(
             {
+                # insert close data from alphavantage
                 "Close": [
                     float(res["Time Series (Daily)"][date]["5. adjusted close"])
                     for date in res["Time Series (Daily)"]
                 ],
+                # insert split data from alphavantage
                 "Split": [
                     res["Time Series (Daily)"][date]["8. split coefficient"]
                     for date in res["Time Series (Daily)"]
@@ -132,6 +154,8 @@ class AlphaVantageAPI(BaseAPI):
             },
             index=[date for date in res["Time Series (Daily)"]],
         )
+        
+        # set these to null
         df["Sentiment"] = np.NaN
         df["Volume"] = np.NaN
         df.index = pd.DatetimeIndex(df.index)
@@ -139,15 +163,18 @@ class AlphaVantageAPI(BaseAPI):
 
         return df
     
-#finsentim = FinsentimAPI()
-#company_data = finsentim.get_company_data("MSFT")
+"""
 
-av = AlphaVantageAPI()
-company_data = av.get_company_data("MSFT")
+Run:
+<api_class>.get_company_data(<ticker>)
 
-print(company_data)
+Ex: 
+AlphaVantageAPI().get_company_data("MSFT") retreives data for Microsoft from AlphaVantage
 
-av = YFinanceAPI()
-company_data = av.get_company_data("MSFT")
+AlphaVantageAPI().get_company_data("MSFT", "2002-10-09", "2009-02-24") retreives data for Microsoft from AlphaVantage between the dates 2002-10-09 and 2009-02-24
 
-print(company_data)
+AlphaVantageAPI().get_company_data("MSFT", end_date="2002-10-09") retreives data for Microsoft from AlphaVantage until the date 2002-10-09
+
+AlphaVantageAPI().get_company_data("MSFT", "2002-10-09") retreives data for Microsoft from AlphaVantage from the date 2002-10-09 until today
+
+"""
