@@ -12,7 +12,11 @@ from base_client import BaseAPI
 class FinsentimAPI(BaseAPI):
     """Class for retrieving data from Finsentim API"""
     def __init__(self):
-        pass
+        self.session = CachedLimiterSession(
+            per_second=0.9,
+            bucket_class=MemoryQueueBucket,
+            backend=SQLiteCache("finsentim.cache"),
+        )
 
     def _get_company_data(self, comp_name):
         url = """https://api.finsentim.com/latest/
@@ -21,7 +25,7 @@ class FinsentimAPI(BaseAPI):
                  company={}""".format(
                     urllib.parse.quote(comp_name)
                 )
-        res = requests.post(
+        res = self.session.post(
             url,
             json={
                 "requested_sources": [
@@ -66,8 +70,7 @@ class FinsentimAPI(BaseAPI):
 
 class CachedLimiterSession(CacheMixin, LimiterMixin, requests.Session):
     """A class for caching and limiting requests"""
-
-
+    
 class YFinanceAPI(BaseAPI):
     """Class for retrieving data from YFinance API"""
     def __init__(self):
@@ -136,7 +139,8 @@ class AlphaVantageAPI(BaseAPI):
 
         return df
     
-    
+#finsentim = FinsentimAPI()
+#company_data = finsentim.get_company_data("MSFT")
 
 av = AlphaVantageAPI()
 company_data = av.get_company_data("MSFT")

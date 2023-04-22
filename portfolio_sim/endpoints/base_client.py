@@ -2,7 +2,6 @@ import pandas as pd
 
 from abc import ABC, abstractmethod
 
-
 class BaseAPI(ABC):
 
     """Super class for retrieving data from APIs"""
