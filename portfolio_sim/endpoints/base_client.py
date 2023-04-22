@@ -65,7 +65,6 @@ class BaseAPI(ABC):
     def post_process_data(self, df, start_date, end_date):
         df = self.date_filter(df, start_date, end_date)
         
-        
         # Round the float columns to 4 decimal places
         float_cols = df.select_dtypes(include='float').columns
         df_new = df.copy()
@@ -77,9 +76,10 @@ class BaseAPI(ABC):
     
     def date_filter(self, df, start_date=None, end_date=None):
         df.index = pd.to_datetime(df.index)
-        df.index = df.sort_index().index
+        df = df.sort_index()
         
         start_date = start_date if start_date else df.index.min()
         end_date = end_date if end_date else df.index.max()
         
-        return df.loc[start_date:end_date]
+        filtered_df = df.loc[start_date:end_date]
+        return filtered_df[::-1]

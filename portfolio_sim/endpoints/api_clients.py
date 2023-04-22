@@ -137,11 +137,6 @@ class AlphaVantageAPI(BaseAPI):
         return df
     
     
-url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=LYFT&apikey=H1ATKVP3UMENMSPG&datatype=json&outputsize=compact"
-
-res = requests.get(url)
-
-print(res.json())
 
 av = AlphaVantageAPI()
 company_data = av.get_company_data("MSFT")
