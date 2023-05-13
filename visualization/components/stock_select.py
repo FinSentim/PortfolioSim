@@ -1,7 +1,22 @@
 from dash import html, dcc, callback, Input, Output
 from . import ids
 
-stocks = [f"Stock {i}" for i in range(1, 101)]
+stocks = [
+    "SBB",
+    "NVIDIA",
+    "APPLE",
+    "AMD",
+    "BBBY",
+    "GME",
+    "NOKIA",
+    "ERICSSON",
+    "AXFOOD",
+    "ASTRA ZENECA",
+    "VOLVO",
+    "GOOGLE",
+    "AMAZON",
+    "MICROSOFT"
+]
 
 
 stock_selector_dropdown = html.Div([
